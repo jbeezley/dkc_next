@@ -7,8 +7,10 @@ setup(
         'click',
         'elasticsearch',
         'flask',
+        'gunicorn',
         'minio',
-        'pika'
+        'pika',
+        'python-dotenv'
     ],
     packages=find_packages(),
     entry_points={

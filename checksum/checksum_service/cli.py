@@ -1,25 +1,28 @@
 #!/usr/bin/env python
 import json
 import logging
+import os
 
 import click
+import dotenv
 from elasticsearch import Elasticsearch
 from minio import Minio
 import pika
 
 from checksum_service.watch import process_message
 
+dotenv.load_dotenv(os.getenv('DOTENV_PATH'))
 logger = logging.getLogger('checksum_service')
 
 
 @click.command()
-@click.option('--amqp-host', default='localhost')
-@click.option('--amqp-port', default=5672, type=click.INT)
-@click.option('--minio-host', default='localhost')
-@click.option('--minio-port', default=9000, type=click.INT)
-@click.option('--minio-access-key', default='demo')
-@click.option('--minio-secret-key', default='secret-key')
-@click.option('--elasticsearch-host', default='localhost:9200')
+@click.option('--amqp-host', default=os.getenv('AMQP_HOST', 'localhost'))
+@click.option('--amqp-port', default=int(os.getenv('AMQP_PORT', 5672)), type=click.INT)
+@click.option('--minio-host', default=os.getenv('MINIO_HOST', 'localhost'))
+@click.option('--minio-port', default=int(os.getenv('MINIO_PORT', 9000)), type=click.INT)
+@click.option('--minio-access-key', default=os.getenv('MINIO_ACCESS_KEY', 'demo'))
+@click.option('--minio-secret-key', default=os.getenv('MINIO_SECRET_KEY', 'secret-key'))
+@click.option('--elasticsearch-host', default=os.getenv('ELASTICSEARCH_HOST', 'localhost:9200'))
 def main(amqp_host, amqp_port, minio_host, minio_port,
          minio_access_key, minio_secret_key, elasticsearch_host):
 
