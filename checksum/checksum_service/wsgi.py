@@ -35,4 +35,5 @@ def download_file(hashsum):
         return jsonify('File not found'), 404
 
     bucket, file = hits[0]['_id'].split('/', maxsplit=1)
+
     return redirect(minio_client.presigned_url('GET', bucket, file))

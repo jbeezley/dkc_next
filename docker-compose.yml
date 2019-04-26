@@ -7,7 +7,7 @@ services:
   elasticsearch:
     image: elasticsearch:7.0.0
     ports:
-      - "9201:9200"
+      - "9200:9200"
       - "9300"
     environment:
       discovery.type: single-node
@@ -36,4 +36,29 @@ services:
       - rabbitmq
       - elasticsearch
       - minio
-    command: --amqp-host=rabbitmq --minio-host=minio --minio-access-key=demo --minio-secret-key=secret-key --elasticsearch-host=elasticsearch:9200
+    environment:
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: demo
+      MINIO_SECRET_KEY: secret-key
+      AMQP_HOST: rabbitmq
+      ELASTICSEARCH_HOST: elasticsearch:9200
+  checksum_download:
+    build: checksum
+    ports:
+      - "5005:8000"
+    links:
+      - elasticsearch
+      - minio
+    depends_on:
+      - elasticsearch
+      - minio
+    environment:
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: demo
+      MINIO_SECRET_KEY: secret-key
+      MINIO_PORT: 9000
+      AMQP_HOST: rabbitmq
+      ELASTICSEARCH_HOST: elasticsearch:9200
+    entrypoint: gunicorn -b 0.0.0.0:8000 checksum_service.wsgi:app
