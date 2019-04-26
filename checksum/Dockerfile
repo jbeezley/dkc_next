@@ -1,7 +1,7 @@
 FROM python:latest
 MAINTAINER Jonathan Beezley
 
-ADD . /
-RUN pip install -r requirements.txt
-ENTRYPOINT ["python", "checksum_service.py"]
+ADD . /service
+RUN pip install /service
+ENTRYPOINT ["checksum-service"]
 
