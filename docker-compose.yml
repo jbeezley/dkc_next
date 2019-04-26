@@ -1,0 +1,39 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "9672:5672"
+  elasticsearch:
+    image: elasticsearch:7.0.0
+    ports:
+      - "9201:9200"
+      - "9300"
+    environment:
+      discovery.type: single-node
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+    links:
+      - rabbitmq
+    environment:
+      MINIO_ACCESS_KEY: demo
+      MINIO_SECRET_KEY: secret-key
+    volumes:
+      - ./data:/data
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+    command: server /data
+  checksum:
+    build: checksum
+    links:
+      - rabbitmq
+      - elasticsearch
+      - minio
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+      - minio
+    command: --amqp-host=rabbitmq --minio-host=minio --minio-access-key=demo --minio-secret-key=secret-key --elasticsearch-host=elasticsearch:9200
