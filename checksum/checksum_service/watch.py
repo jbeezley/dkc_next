@@ -22,7 +22,7 @@ def process_message(minio_client, es_client, body):
         bucket, file = body['Key'].split('/', maxsplit=1)
         file_obj = minio_client.get_object(bucket, file)
         sha = compute_hash(file_obj)
-        es_client.update(index='files', id=body['Key'], body={
+        es_client.update(index='sha256', id=body['Key'], body={
             'doc': {'sha256': sha},
             'upsert': {'sha256': sha}
         })
@@ -30,8 +30,7 @@ def process_message(minio_client, es_client, body):
 
     elif event.startswith('s3:ObjectRemoved'):
         try:
-            es_client.delete(index='files', id=body['Key'])
+            es_client.delete(index='sha256', id=body['Key'])
             logger.info(f'{body["Key"]} deleted')
         except NotFoundError:
-            logger.warn(f'{body["Key"]} not found')
-            pass
+            logger.debug(f'{body["Key"]} already deleted')

@@ -23,7 +23,7 @@ minio_client = Minio(
 
 @app.route('/download/<hashsum>')
 def download_file(hashsum):
-    result = es_client.search(index='sha256', size=1, body={
+    result = es_client.search(index='files', size=1, body={
         'query': {
             'match': {
                 'sha256': hashsum

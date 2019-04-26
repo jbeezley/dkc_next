@@ -4,6 +4,12 @@ services:
     image: rabbitmq
     ports:
       - "9672:5672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "is_running"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   elasticsearch:
     image: elasticsearch:7.0.0
     ports:
@@ -11,6 +17,7 @@ services:
       - "9300"
     environment:
       discovery.type: single-node
+
   minio:
     image: minio/minio
     ports:
@@ -26,6 +33,7 @@ services:
       - rabbitmq
       - elasticsearch
     command: server /data
+
   checksum:
     build: checksum
     links:
@@ -62,3 +70,21 @@ services:
       AMQP_HOST: rabbitmq
       ELASTICSEARCH_HOST: elasticsearch:9200
     entrypoint: gunicorn -b 0.0.0.0:8000 checksum_service.wsgi:app
+
+  metadata:
+    build: metadata
+    links:
+      - rabbitmq
+      - elasticsearch
+      - minio
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+      - minio
+    environment:
+      MINIO_HOST: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: demo
+      MINIO_SECRET_KEY: secret-key
+      AMQP_HOST: rabbitmq
+      ELASTICSEARCH_HOST: elasticsearch:9200

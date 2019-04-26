@@ -9,10 +9,10 @@ from elasticsearch import Elasticsearch
 from minio import Minio
 import pika
 
-from checksum_service.watch import process_message
+from metadata_service.watch import process_message
 
 dotenv.load_dotenv(os.getenv('DOTENV_PATH'))
-logger = logging.getLogger('checksum_service')
+logger = logging.getLogger('metadata_service')
 
 
 @click.command()
@@ -44,7 +44,7 @@ def main(amqp_host, amqp_port, minio_host, minio_port,
     channel.exchange_declare(exchange='bucketevents',
                              exchange_type='fanout')
 
-    queue_name = 'checksum-service'
+    queue_name = 'metadata-service'
     channel.queue_declare(queue_name, exclusive=True)
 
     channel.queue_bind(exchange='bucketevents',
