@@ -4,10 +4,15 @@ from pathlib import PurePath
 import click
 from dateutil.parser import parse
 from elasticsearch import NotFoundError
+from faker import Faker, providers
 from minio_watcher import watch
 
 SHA256_BUFFER = 4096
 logger = logging.getLogger(__name__)
+fake = Faker()
+fake.add_provider(providers.address)
+fake.add_provider(providers.geo)
+fake.add_provider(providers.profile)
 
 
 def generate_default(record):
@@ -23,6 +28,25 @@ def generate_default(record):
 
 def generate_metadata(file_obj, record):
     meta = record['s3']['object'].get('userMetadata', {})  # inject s3 metadata
+
+    # add some fake data to search on
+    latitude, longitude, place, country, timezone = fake.location_on_land()
+    meta = {
+        'text': fake.text(),
+        'name': fake.name(),
+        'latitude': float(latitude),
+        'longitude': float(longitude),
+        'place': place,
+        'country': country,
+        'timezone': timezone,
+        'profile': fake.profile(),
+        'date': fake.date()
+    }
+    if meta['country'] == 'US':
+        state = fake.state_abbr()
+        meta['state'] = state
+        meta['zip'] = fake.postalcode_in_state(state)
+
     return meta
 
 

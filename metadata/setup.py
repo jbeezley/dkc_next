@@ -6,6 +6,7 @@ setup(
     install_requires=[
         'click',
         'elasticsearch',
+        'faker',
         'flask',
         'gunicorn',
         'minio-watcher',
