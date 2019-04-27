@@ -36,7 +36,11 @@ def get_elasticsearch_client():
     return Elasticsearch(elasticsearch_hosts)
 
 
-def watch(queue_name, create_handler, delete_handler):
+def noop(*args, **kwargs):
+    pass
+
+
+def watch(queue_name, create_handler=noop, delete_handler=noop, global_handler=noop):
     logger.addHandler(logging.StreamHandler())
     logger.setLevel(logging.INFO)
 
@@ -64,15 +68,21 @@ def watch(queue_name, create_handler, delete_handler):
             return
 
         event = body['EventName']
+        logger.debug(event)
+        try:
+            global_handler(body=body, minio_client=minio_client, es_client=es_client)
+        except Exception:
+            logger.exception('global handler failed')
+
         if event.startswith('s3:ObjectCreated'):
             try:
-                create_handler(minio_client, es_client, body)
+                create_handler(body=body, minio_client=minio_client, es_client=es_client)
             except Exception:
                 logger.exception('create handler failed')
 
         elif event.startswith('s3:ObjectRemoved'):
             try:
-                delete_handler(minio_client, es_client, body)
+                delete_handler(body=body, minio_client=minio_client, es_client=es_client)
             except Exception:
                 logger.exception('delete handler failed')
 

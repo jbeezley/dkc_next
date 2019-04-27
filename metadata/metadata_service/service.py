@@ -31,7 +31,7 @@ def generate_metadata(file_obj, record):
 
     # add some fake data to search on
     latitude, longitude, place, country, timezone = fake.location_on_land()
-    meta = {
+    meta.update({
         'text': fake.text(),
         'name': fake.name(),
         'latitude': float(latitude),
@@ -41,7 +41,7 @@ def generate_metadata(file_obj, record):
         'timezone': timezone,
         'profile': fake.profile(),
         'date': fake.date()
-    }
+    })
     if meta['country'] == 'US':
         state = fake.state_abbr()
         meta['state'] = state
@@ -50,7 +50,7 @@ def generate_metadata(file_obj, record):
     return meta
 
 
-def create_handler(minio_client, es_client, body):
+def create_handler(body, minio_client, es_client, **kwargs):
     bucket, file = body['Key'].split('/', maxsplit=1)
 
     # TODO: Will this ever contain more than one record?
@@ -68,7 +68,7 @@ def create_handler(minio_client, es_client, body):
     logger.info(f'{body["Key"]} -> {obj}')
 
 
-def delete_handler(minio_client, es_client, body):
+def delete_handler(body, es_client, **kwargs):
     try:
         es_client.delete(index='metadata', id=body['Key'])
         logger.info(f'{body["Key"]} deleted')

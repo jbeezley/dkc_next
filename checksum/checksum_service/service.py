@@ -16,7 +16,7 @@ def compute_hash(file_obj):
     return h.hexdigest()
 
 
-def create_handler(minio_client, es_client, body):
+def create_handler(body, minio_client, es_client, **kwargs):
     bucket, file = body['Key'].split('/', maxsplit=1)
     file_obj = minio_client.get_object(bucket, file)
     sha = compute_hash(file_obj)
@@ -27,7 +27,7 @@ def create_handler(minio_client, es_client, body):
     logger.info(f'{body["Key"]} -> {sha}')
 
 
-def delete_handler(minio_client, es_client, body):
+def delete_handler(body, es_client, **kwargs):
     try:
         es_client.delete(index='sha256', id=body['Key'])
         logger.info(f'{body["Key"]} deleted')
