@@ -35,7 +35,9 @@ services:
     command: server /data
 
   checksum:
-    build: checksum
+    build:
+      context: .
+      dockerfile: Dockerfile.checksum
     links:
       - rabbitmq
       - elasticsearch
@@ -51,8 +53,11 @@ services:
       MINIO_SECRET_KEY: secret-key
       AMQP_HOST: rabbitmq
       ELASTICSEARCH_HOST: elasticsearch:9200
+
   checksum_download:
-    build: checksum
+    build:
+      context: .
+      dockerfile: Dockerfile.checksum
     ports:
       - "5005:8000"
     links:
@@ -72,7 +77,9 @@ services:
     entrypoint: gunicorn -b 0.0.0.0:8000 checksum_service.wsgi:app
 
   metadata:
-    build: metadata
+    build:
+      context: .
+      dockerfile: Dockerfile.metadata
     links:
       - rabbitmq
       - elasticsearch

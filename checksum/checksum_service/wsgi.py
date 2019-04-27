@@ -1,24 +1,11 @@
-import os
-
-import dotenv
-from elasticsearch import Elasticsearch
 from flask import Flask, jsonify, redirect
-from minio import Minio
+from minio_watcher import get_elasticsearch_client, get_minio_client
 
 
-dotenv.load_dotenv(os.getenv('DOTENV_PATH'))
 app = Flask(__name__)
 
-es_client = Elasticsearch([os.getenv('ELASTICSEARCH_HOST')])
-
-minio_host = os.getenv('MINIO_HOST', 'localhost')
-minio_port = os.getenv('MINIO_PORT', 9000)
-minio_client = Minio(
-    f'{minio_host}:{minio_port}',
-    access_key=os.getenv('MINIO_ACCESS_KEY'),
-    secret_key=os.getenv('MINIO_SECRET_KEY'),
-    secure=False
-)
+es_client = get_elasticsearch_client()
+minio_client = get_minio_client()
 
 
 @app.route('/download/<hashsum>')

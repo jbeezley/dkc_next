@@ -8,15 +8,13 @@ setup(
         'elasticsearch',
         'flask',
         'gunicorn',
-        'minio',
-        'pika',
-        'python-dateutil',
+        'minio-watcher',
         'python-dotenv'
     ],
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'metadata-service = metadata_service.cli:main'
+            'metadata-service = metadata_service.service:main'
         ]
     }
 )

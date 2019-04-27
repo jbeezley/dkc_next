@@ -8,14 +8,12 @@ setup(
         'elasticsearch',
         'flask',
         'gunicorn',
-        'minio',
-        'pika',
-        'python-dotenv'
+        'minio-watcher'
     ],
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'checksum-service = checksum_service.cli:main'
+            'checksum-service = checksum_service.service:main'
         ]
     }
 )

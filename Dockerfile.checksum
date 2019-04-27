@@ -1,0 +1,11 @@
+FROM python:latest
+MAINTAINER Jonathan Beezley
+
+ADD ./watcher /watcher
+RUN pip install /watcher
+
+ADD ./checksum /checksum
+RUN pip install /checksum
+
+ENTRYPOINT ["checksum-service"]
+
