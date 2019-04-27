@@ -95,3 +95,12 @@ services:
       MINIO_SECRET_KEY: secret-key
       AMQP_HOST: rabbitmq
       ELASTICSEARCH_HOST: elasticsearch:9200
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.0.0
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
