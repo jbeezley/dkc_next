@@ -10,7 +10,8 @@ setup(
         'flask',
         'gunicorn',
         'minio-watcher',
-        'python-dotenv'
+        'python-dotenv',
+        'webargs'
     ],
     packages=find_packages(),
     entry_points={

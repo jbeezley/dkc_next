@@ -96,6 +96,20 @@ services:
       AMQP_HOST: rabbitmq
       ELASTICSEARCH_HOST: elasticsearch:9200
 
+  metadata_search:
+    build:
+      context: .
+      dockerfile: Dockerfile.metadata
+    ports:
+      - "5006:8000"
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    environment:
+      ELASTICSEARCH_HOST: elasticsearch:9200
+    entrypoint: gunicorn -b 0.0.0.0:8000 metadata_service.wsgi:app
+
   kibana:
     image: docker.elastic.co/kibana/kibana:7.0.0
     ports:
