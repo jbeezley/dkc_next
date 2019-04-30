@@ -175,7 +175,7 @@
     "webhook": {
       "1": {
         "enable": false,
-        "endpoint": ""
+        "endpoint": "http://requestbin.fullcontact.com/vdk6s3vd"
       }
     }
   },
